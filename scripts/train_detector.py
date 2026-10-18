@@ -65,7 +65,8 @@ def prepare_dataset(dataset_config: dict[str, Any], zip_path: Path | None) -> Pa
             extract_dataset(zip_file, dataset_dir)
 
     data_yaml = normalize_data_yaml(dataset_dir)
-    license_name = yaml.safe_load(data_yaml.read_text()).get("roboflow", {}).get("license")
+    data = yaml.safe_load(data_yaml.read_text(encoding="utf-8"))
+    license_name = data.get("roboflow", {}).get("license")
     logger.info("Clases del dataset: %s", ", ".join(class_names(data_yaml)))
     logger.info("Licencia del dataset: %s", license_name or "no indicada; revisar en Roboflow")
     return data_yaml

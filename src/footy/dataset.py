@@ -95,9 +95,12 @@ def download_roboflow_export(
             continue
         raise RuntimeError(f"Roboflow respondió {status}: {payload}")
 
+    link = payload.get("export", {}).get("link")
+    if not link:
+        raise RuntimeError(f"Roboflow no devolvió el enlace de descarga: {payload}")
     destination.parent.mkdir(parents=True, exist_ok=True)
     logger.info("Descargando %s versión %d...", dataset.project, dataset.version)
-    _download_file(payload["export"]["link"], destination)
+    _download_file(link, destination)
     return destination
 
 

@@ -15,7 +15,7 @@ detection:
   device: null                # null = automático (GPU si hay); ejemplos: "cpu", "0"
   imgsz: 1280                 # tamaño de inferencia; alto para no perder el balón
   confidence: 0.25            # confianza mínima para aceptar una detección
-  nms_iou: 0.7                # IoU de NMS (YOLO26 no usa NMS y lo ignora)
+  nms_iou: 0.7                # IoU de NMS para quitar cajas repetidas
   batch_size: 8               # cuadros por llamada al modelo
   classes: [player, goalkeeper, referee, ball]
   # Nombre de clase del modelo -> clase del proyecto. Permite usar un modelo COCO

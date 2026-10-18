@@ -148,3 +148,11 @@ def test_download_gives_up_after_timeout(tmp_path: Path, monkeypatch: pytest.Mon
     fake_api([(202, {"progress": 0.1})], monkeypatch)
     with pytest.raises(RuntimeError, match="202"):
         download_roboflow_export(ROBOFLOW, "clave", tmp_path / "d.zip", timeout_s=0)
+
+
+def test_download_rejects_response_without_link(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fake_api([(200, {"export": {}})], monkeypatch)
+    with pytest.raises(RuntimeError, match="enlace"):
+        download_roboflow_export(ROBOFLOW, "clave", tmp_path / "d.zip")

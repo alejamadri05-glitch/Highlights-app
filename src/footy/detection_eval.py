@@ -1,6 +1,7 @@
 """Evaluación de la detección del balón sobre un split etiquetado (por ejemplo, con y sin SAHI)."""
 
 import itertools
+import logging
 import time
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -11,6 +12,8 @@ import cv2
 from footy.dataset import iter_split, read_yolo_labels
 from footy.detection import BALL_CLASS, FrameDetector
 from footy.metrics import MatchCounts, match_boxes
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -53,6 +56,9 @@ def evaluate_ball_detection(
     images = real_balls = 0
     for image_path, label_path in itertools.islice(iter_split(dataset_dir, split), max_images):
         image = cv2.imread(str(image_path))
+        if image is None:
+            logger.warning("No se pudo leer %s; se omite", image_path)
+            continue
         height, width = image.shape[:2]
         label_ids, label_boxes = read_yolo_labels(label_path, width, height)
         balls_in_image = label_boxes[label_ids == ball_label_id]
