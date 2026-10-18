@@ -1,0 +1,60 @@
+# Parámetros de footy-highlights. Ningún umbral va fijo en el código (CLAUDE.md §4).
+# Las rutas relativas se resuelven desde la carpeta donde se ejecutan los scripts
+# (la raíz del repositorio).
+
+video:
+  processing_fps: 10          # cuadros por segundo que se analizan; el resto se salta
+  encode:                     # FFmpeg/H.264 para los videos que generamos
+    crf: 23                   # calidad: menor = mejor calidad y archivo más pesado
+    preset: veryfast          # velocidad de codificación de libx264
+
+detection:
+  # Pesos del modelo. Los oficiales de Ultralytics se descargan solos la primera vez.
+  # Después del fine-tuning, cambiar a data/models/footy-detector.pt.
+  weights: data/models/yolo26m.pt
+  device: null                # null = automático (GPU si hay); ejemplos: "cpu", "0"
+  imgsz: 1280                 # tamaño de inferencia; alto para no perder el balón
+  confidence: 0.25            # confianza mínima para aceptar una detección
+  nms_iou: 0.7                # IoU de NMS (YOLO26 no usa NMS y lo ignora)
+  batch_size: 8               # cuadros por llamada al modelo
+  classes: [player, goalkeeper, referee, ball]
+  # Nombre de clase del modelo -> clase del proyecto. Permite usar un modelo COCO
+  # antes del fine-tuning: "person" cuenta como player y "sports ball" como ball.
+  class_map:
+    person: player
+    sports ball: ball
+  ball_slicing:               # SAHI: inferencia por recortes, solo para la clase ball
+    enabled: false
+    slice_wh: [640, 640]      # tamaño de cada recorte en píxeles (ancho, alto)
+    overlap_wh: [128, 128]    # traslape entre recortes vecinos en píxeles
+    merge_iou: 0.5            # IoU a partir del cual dos balones son el mismo
+    batch_size: 8             # recortes por llamada al modelo
+
+output_dir: outputs           # resultados por video: outputs/<video>/
+
+dataset:
+  dir: data/datasets/football-players-detection
+  roboflow:                   # https://universe.roboflow.com/roboflow-jvuqo/football-players-detection-3zvbc
+    workspace: roboflow-jvuqo
+    project: football-players-detection-3zvbc
+    version: 10               # la que usa el notebook oficial de Roboflow (roboflow/sports)
+    format: yolov8
+
+training:
+  base_weights: data/models/yolo26m.pt
+  epochs: 50
+  imgsz: 1280
+  batch: 8                    # bajar si la GPU se queda sin memoria
+  patience: 20                # detener si val no mejora en N épocas
+  device: null
+  seed: 0
+  plots: true                 # gráficas de entrenamiento en runs_dir
+  runs_dir: data/runs
+  run_name: footy-detector
+  output_weights: data/models/footy-detector.pt
+
+evaluation:
+  split: val
+  output_dir: outputs/eval
+  ball_match_iou: 0.5         # IoU mínimo para contar un balón detectado como acierto
+  match_minutes: 90           # para estimar cuánto tarda un partido completo

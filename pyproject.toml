@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "footy-highlights"
+version = "0.1.0"
+description = "Highlights y estadísticas de un jugador desde video de fútbol grabado con celular."
+readme = "README.md"
+requires-python = ">=3.11"
+# Versiones fijas (CLAUDE.md §10). torch no se fija aquí: lo instala ultralytics y cada
+# plataforma de GPU (Colab, Modal, RunPod) trae la build de CUDA que le corresponde.
+dependencies = [
+    "numpy==2.4.6",
+    "opencv-python==4.14.0.94",
+    "pyyaml==6.0.3",
+    "supervision==0.31.0",
+    "ultralytics==8.4.182",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.1.1",
+    "ruff==0.17.1",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "scripts", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]

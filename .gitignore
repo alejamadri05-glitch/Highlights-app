@@ -1,0 +1,28 @@
+# Videos, modelos, datasets y resultados nunca van al repositorio (CLAUDE.md §8 y §10)
+data/
+outputs/
+runs/
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.pt
+*.onnx
+*.engine
+*.zip
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Secretos (por ejemplo ROBOFLOW_API_KEY)
+.env
